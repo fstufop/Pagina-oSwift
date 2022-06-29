@@ -1,2 +1,2 @@
-# Pagina-oSwift
+# infinitScrollSwift
 Implementação de paginação em swift
