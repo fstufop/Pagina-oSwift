@@ -10,4 +10,5 @@ import Foundation
 protocol PaginationViewModelDelegate {
     func didSuccess(items: [Item])
     func didFailure(error: String)
+    func dismissLoading()
 }
