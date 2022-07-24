@@ -2,22 +2,23 @@
 //  PaginationViewModel.swift
 //  Pagination
 //
-//  Created by Filipe Simoes Teodoro on 24/06/22.
+//  Created by filipe.teodoro on 19/06/22.
 //
 
 import Foundation
 
-final class PaginationViewModel {
+class PaginationViewModel {
     // MARK: Properties
-    private var model: PaginationModel?
     private let service = PaginationService()
-    private var page: Int = 1
+    private(set) var model: PaginationModel?
     private(set) var items: [Item] = []
+    private var page: Int = 1
     var delegate: PaginationViewModelDelegate?
     var hasRequestInProgress: Bool = false
-    // MARK: Service
-    func getData(limit: Int) {
-        guard !hasRequestInProgress else {return}
+    
+    // MARK: Methods
+    func getDataPage(limit: Int) {
+        guard !hasRequestInProgress else { return }
         hasRequestInProgress = true
         service.request(page: page.description, limit: limit.description) { response in
             switch response {
@@ -29,20 +30,22 @@ final class PaginationViewModel {
             case .failure(let error):
                 self.delegate?.didFailure(error: error.localizedDescription)
             }
+            self.delegate?.dismissLoading()
             self.hasRequestInProgress = false
         }
     }
     
     func getMoreData(limit: Int) {
-        guard 4 >= self.page else { return }
-        getData(limit: limit)
+        guard getNumberOfPages() >= self.page else { return }
+        getDataPage(limit: limit)
     }
     
     func getNumberOfPages() -> Int {
         return model?.pagination.totalPages ?? 0
     }
     
-    func getCurrentPage() -> Int {
-        return model?.pagination.currentPage ?? 0
+    func refreshData() {
+        page = 1
+        items.removeAll()
     }
 }
